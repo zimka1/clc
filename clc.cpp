@@ -22,6 +22,9 @@ int main()
     int a,b;
     a = atoi(s1.c_str());
     b = atoi(s2.c_str());
-    cout << a << ' ' << b;
+    if (sign == '+') cout << a + b;
+    if (sign == '*') cout << a * b;
+    if (sign == '-') cout << a - b;
+    if (sign == '/') cout << a / b;
     return 0;
 }
