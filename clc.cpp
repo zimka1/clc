@@ -5,12 +5,12 @@
 using namespace std;
 
 
-string s, s1, s2,mist;
+string s, s1, s2, mist, why = " ";
 int fl = 0,n;
 
 void check ()
 {
-    int k = 0,zn = 0;
+    int k = 0, zn = 0, pzn = 0;
     for (int i = 0; i < n; i++)
     {
         if (s[i] == ' ') k++;
@@ -20,10 +20,23 @@ void check ()
              s[i] != '*' && s[i] != ' ' && s[i] != '0' &&
               s[i] != '1' && s[i] != '2' && s[i] != '3' &&
                s[i] != '4' && s[i] != '5' && s[i] != '6' &&
-                s[i] != '7' && s[i] != '8' && s[i] != '9') mist[i] = '^';
+                s[i] != '7' && s[i] != '8' && s[i] != '9')
+                {
+                    mist[i] = '^';
+                    why = "Error: unsupported operator.";
+                    return;
+                }
 
 
-        if (s[i] == '+' || s[i] == '-' || s[i] == '/' || s[i] == '*') zn++;
+        if (s[i] == '+' || s[i] == '-' || s[i] == '/' || s[i] == '*') {zn++; pzn++;}
+
+
+        if (pzn == 2 && zn <= 1)
+        {
+            mist[i] = '^';
+            why = "Error: expected end of expression.";
+            return;
+        }
 
 
         if (s[i] != '+' && s[i] != '-' && s[i] != '/' && s[i] != '*' && s[i] != ' ' && k != 0 && zn == 0)
@@ -34,6 +47,8 @@ void check ()
                 mist[j] = '^';
                 j--;
             }
+            why = "Error: expected operator.";
+            return;
         }
         if (s[i] != '+' && s[i] != '-' && s[i] != '/' && s[i] != '*' && s[i] != ' ' && zn > 1)
         {
@@ -42,7 +57,13 @@ void check ()
             {
                 j--;
                 if (s[j] == '+' || s[j] == '-' || s[j] == '/' || s[j] == '*')
-                    mist[j] = '^';
+                {
+                    while (s[j - 1] == '+' || s[j - 1] == '-' || s[j - 1] == '/' || s[j - 1] == '*')
+                        j--;
+                    mist[j + 1] = '^';
+                    why = "Error : extra sign.";
+                    return;
+                }
             }
         }
         if (s[i] != '+' && s[i] != '-' && s[i] != '/' && s[i] != '*' && s[i] != ' ' && (k == 0 || zn != 0))
@@ -69,18 +90,10 @@ int main()
         if (s[i] == '+' || s[i] == '-' || s[i] == '/' || s[i] == '*') sign = s[i];
 
     }
-    fl = 0;
-    for (int i = 0 ; i < n; i++)
+    if (why != " ")
     {
-        if (mist[i] == '^')
-        {
-            fl = 1;
-            break;
-        }
-    }
-    if (fl == 1)
-    {
-        cout << mist;
+        cout << mist << endl;
+        cout << why;
         return 0;
     }
 
