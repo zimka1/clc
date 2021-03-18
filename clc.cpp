@@ -4,9 +4,9 @@
 #include <vector>
 using namespace std;
 
-
-string s, s1, s2, mist, why = " ";
-int fl = 0, n, fi = 0, mi = 0;
+char sign = ' ';
+string s, s1, s2, mist, why = "";
+int fl = 0, n, fi = 0, mi = 0, a, b;
 
 void check ()
 {
@@ -62,6 +62,7 @@ void check ()
             why = "Error: expected operator.";
             return;
         }
+
         if (s[i] != '+' && s[i] != '-' && s[i] != '/' && s[i] != '*' && s[i] != ' ' && zn > 1)
         {
             int j = i;
@@ -89,13 +90,31 @@ void check ()
 
 int main()
 {
-    char sign = ' ';
+    while (1)
+    {
     getline(cin,s);
+
+    s1 = "";
+    s2 = "";
+    sign = ' ';
+    why = "";
+    if (s == "q") return 0;
+    mist="";
     mist.resize(s.size());
     n = s.size();
-    check();
     mi = 0;
     fi = 0;
+    fl = 0;
+    check();
+    if ((s[0] == '-' && (s[1] != '0' && s[1] != '1' &&
+                        s[1] != '2' && s[1] != '3' &&
+                        s[1] != '4' && s[1] != '5' &&
+                        s[1] != '6' && s[1] != '7' &&
+                        s[1] != '8' && s[1] != '9')) || s[0] == '+' || s[0] == '/' || s[0] == '*' )
+                        {
+                           mist[0] = '^';
+
+                        }
     if (s[0] == '-' && (s[1] == '0' || s[1] == '1' ||
                         s[1] == '2' || s[1] == '3' ||
                         s[1] == '4' || s[1] == '5' ||
@@ -107,31 +126,40 @@ int main()
 
     for (int i = fi; i < n; i++)
     {
-//        cout << s[i];
         if (sign != ' ' && s[i] != '-') s2 += s[i];
+
         if (s[i] == '+' || s[i] == '-' || s[i] == '/' || s[i] == '*') fl++;
+
         if (fl == 0) s1 += s[i];
+
         if (s[i] == '-' && sign != ' ') mi = 1;
-        else
-        if (s[i] == '+' || s[i] == '-' || s[i] == '/' || s[i] == '*') sign = s[i];
+        else if (s[i] == '+' || s[i] == '-' || s[i] == '/' || s[i] == '*') sign = s[i];
 
     }
-
-    if (why != " ")
+    if (why != "")
     {
+        int f = 0;
+        for (int i = 0; i < n; i++)
+        {
+            if (mist[i] != '^' || f == 1) mist[i] = '.';
+            if (mist[i] == '^') f = 1;
+        }
         cout << mist << endl;
-        cout << why;
-        return 0;
+        cout << why << endl;
+        continue;
     }
 
-    int a,b;
+    a = 0;
+    b = 0;
     a = atoi(s1.c_str());
     b = atoi(s2.c_str());
+
     if (fi == 1) a *= -1;
     if (mi == 1) b *= -1;
-    if (sign == '+') cout << a + b;
-    if (sign == '*') cout << a * b;
-    if (sign == '-') cout << a - b;
-    if (sign == '/') cout << a / b;
-    return 0;
+
+    if (sign == '+') cout << a + b << endl;
+    if (sign == '*') cout << a * b << endl;
+    if (sign == '-') cout << a - b << endl;
+    if (sign == '/') cout << a / b << endl;
+    }
 }
