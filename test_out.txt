@@ -1,0 +1,12 @@
+26
+^.......
+Error : extra sign.
+85
+96
+....^...
+Error : extra sign.
+...^..
+Error: unsupported operator.
+56621
+..^.....
+Error: expected operator.
