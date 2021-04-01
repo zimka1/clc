@@ -1,77 +1,77 @@
 #include <stdio.h>
 #include <iostream>
 #include <string>
-#include <vector>
+#include <set>
 using namespace std;
 
 char sign = ' ';
-string s, s1, s2, mist, why = "";
-int fl = 0, n, fi = 0, mi = 0, a, b;
+string glavstr, mist, why = "";
+int n;
+set <char> cifri;
+set <char> znaki;
 
-void check ()
-{
-    int k = 0, zn = 0, pzn = 0;
-    for (int i = 0; i < n; i++)
-    {
-        if (s[i] == ' ') k++;
+// Заполняет set
+void zapoln(){
+    for (char i = '0'; i <= '9'; i++){
+        cifri.insert(i);
+    }
+    znaki.insert('-');
+    znaki.insert('+');
+    znaki.insert('*');
+    znaki.insert('/');
+    znaki.insert(' ');
+}
 
+void check (){
+    int kolprob = 0, kolznak = 0, pzn = 0, kolcifr = 0;
+    for (int i = 0; i < n; i++){
+        if (glavstr[i] == ' ' && kolcifr != 0) kolprob++;// Подсчитывание пробелов
+        if (cifri.count(glavstr[i]) != 0){
+            kolcifr++;   // Подсчитывание цифр
+        }
 
-        if (s[i] != '+' && s[i] != '-' && s[i] != '/' &&
-             s[i] != '*' && s[i] != ' ' && s[i] != '0' &&
-              s[i] != '1' && s[i] != '2' && s[i] != '3' &&
-               s[i] != '4' && s[i] != '5' && s[i] != '6' &&
-                s[i] != '7' && s[i] != '8' && s[i] != '9')
-                {
-                    mist[i] = '^';
-                    why = "Error: unsupported operator.";
-                    return;
-                }
+        // Проверка не поставлен ли неизвестный знак.
+        if (cifri.count(glavstr[i]) == 0 && znaki.count(glavstr[i]) == 0){
+            mist[i] = '^';
+            why = "Error: unsupported operator.";
+            return;
+        }
 
+        // Подсчитывание знаков.
+        if (znaki.count(glavstr[i]) != 0 && glavstr[i] != ' '){
 
-        if (s[i] == '+' || s[i] == '-' || s[i] == '/' || s[i] == '*')
-        {
-
-            if (s[i] != '-' || (s[i] != '-' || (s[i+1] != '0' &&
-                                                s[i+1] != '1' && s[i+1] != '2' && s[i+1] != '3' &&
-                                                s[i+1] != '4' && s[i+1] != '5' && s[i+1] != '6' &&
-                                                s[i+1] != '7' && s[i+1] != '8' && s[i+1] != '9')))
-                                                    {
-                                                        zn++;
-                                                        pzn++;
-                                                    }
+            if (glavstr[i] != '-' || cifri.count(glavstr[i+1]) == 0){
+                kolznak++;
+                pzn++;
+            }
 
         }
 
-
-        if (pzn == 2 && zn <= 1)
-        {
+        // Проверяется законченно ли выражение.
+        if (pzn == 2 && kolznak <= 1){
+            cout << pzn << endl;
             mist[i] = '^';
             why = "Error: expected end of expression.";
             return;
         }
 
-
-        if (s[i] != '+' && s[i] != '-' && s[i] != '/' && s[i] != '*' && s[i] != ' ' && k != 0 && zn == 0)
-        {
+        // Проверяется не пропущен ли знак.
+        if (znaki.count(glavstr[i]) == 0 && kolprob != 0 && kolznak == 0){
             int j = i - 1;
-            while (s[j] == ' ')
-            {
+            while (glavstr[j] == ' '){
                 mist[j] = '^';
                 j--;
             }
             why = "Error: expected operator.";
             return;
         }
-
-        if (s[i] != '+' && s[i] != '-' && s[i] != '/' && s[i] != '*' && s[i] != ' ' && zn > 1)
-        {
+        // Проверяется не поставлен ли лишний знак.
+        if (glavstr[i] != '+' && glavstr[i] != '-' && glavstr[i] != '/' && glavstr[i] != '*' && glavstr[i] != ' ' && kolznak > 1){
             int j = i;
-            while (s[j] != '+' && s[j] != '-' && s[j] != '/' && s[j] != '*')
-            {
+            while (glavstr[j] != '+' && glavstr[j] != '-' && glavstr[j] != '/' && glavstr[j] != '*'){
                 j--;
-                if (s[j] == '+' || s[j] == '-' || s[j] == '/' || s[j] == '*')
-                {
-                    while (s[j - 1] == '+' || s[j - 1] == '-' || s[j - 1] == '/' || s[j - 1] == '*')
+                if (glavstr[j] == '+' || glavstr[j] == '-' || glavstr[j] == '/' || glavstr[j] == '*'){
+                    while (glavstr[j - 1] == '+' || glavstr[j - 1] == '-' || glavstr[j - 1] == '/' || glavstr[j - 1] == '*')
                         j--;
                     mist[j + 1] = '^';
                     why = "Error : extra sign.";
@@ -79,10 +79,9 @@ void check ()
                 }
             }
         }
-        if (s[i] != '+' && s[i] != '-' && s[i] != '/' && s[i] != '*' && s[i] != ' ' && (k == 0 || zn != 0))
-        {
-            k = 0;
-            zn = 0;
+        if (znaki.count(glavstr[i]) == 0 && (kolprob == 0 || kolznak != 0)){
+            kolprob = 0;
+            kolznak = 0;
         }
     }
 
@@ -90,76 +89,76 @@ void check ()
 
 int main()
 {
-    while (1)
-    {
-    getline(cin,s);
+    zapoln();
+    while (1){
 
-    s1 = "";
-    s2 = "";
-    sign = ' ';
-    why = "";
-    if (s == "q") return 0;
-    mist="";
-    mist.resize(s.size());
-    n = s.size();
-    mi = 0;
-    fi = 0;
-    fl = 0;
-    check();
-    if ((s[0] == '-' && (s[1] != '0' && s[1] != '1' &&
-                        s[1] != '2' && s[1] != '3' &&
-                        s[1] != '4' && s[1] != '5' &&
-                        s[1] != '6' && s[1] != '7' &&
-                        s[1] != '8' && s[1] != '9')) || s[0] == '+' || s[0] == '/' || s[0] == '*' )
-                        {
-                           mist[0] = '^';
+        getline(cin,glavstr);
 
-                        }
-    if (s[0] == '-' && (s[1] == '0' || s[1] == '1' ||
-                        s[1] == '2' || s[1] == '3' ||
-                        s[1] == '4' || s[1] == '5' ||
-                        s[1] == '6' || s[1] == '7' ||
-                        s[1] == '8' || s[1] == '9'))
-                        {
-                        fi = 1;
-                        }
+        string firstch = "",secondch = "";
 
-    for (int i = fi; i < n; i++)
-    {
-        if (sign != ' ' && s[i] != '-') s2 += s[i];
+        sign = ' ';
 
-        if (s[i] == '+' || s[i] == '-' || s[i] == '/' || s[i] == '*') fl++;
+        why = "";
 
-        if (fl == 0) s1 += s[i];
+        if (glavstr == "quit") return 0;
 
-        if (s[i] == '-' && sign != ' ') mi = 1;
-        else if (s[i] == '+' || s[i] == '-' || s[i] == '/' || s[i] == '*') sign = s[i];
+        mist="";
 
-    }
-    if (why != "")
-    {
-        int f = 0;
-        for (int i = 0; i < n; i++)
-        {
-            if (mist[i] != '^' || f == 1) mist[i] = '.';
-            if (mist[i] == '^') f = 1;
+        mist.resize(glavstr.size());
+
+        n = glavstr.size();
+
+        int schetchik = 0, minusfir = 0, minussec = 0;
+
+
+        if ((glavstr[0] == '-' && cifri.count(glavstr[1]) == 0) || glavstr[0] == '+' || glavstr[0] == '/' || glavstr[0] == '*'){
+            mist[0] = '^';
+            why = "Error : extra sign.";
         }
-        cout << mist << endl;
-        cout << why << endl;
-        continue;
-    }
 
-    a = 0;
-    b = 0;
-    a = atoi(s1.c_str());
-    b = atoi(s2.c_str());
+        if (glavstr[0] == '-' && cifri.count(glavstr[1]) != 0){
+            minusfir = 1;
+        }
 
-    if (fi == 1) a *= -1;
-    if (mi == 1) b *= -1;
+        // Проверка на ошибки.
+        if (why == "") check();
 
-    if (sign == '+') cout << a + b << endl;
-    if (sign == '*') cout << a * b << endl;
-    if (sign == '-') cout << a - b << endl;
-    if (sign == '/') cout << a / b << endl;
+        for (int i = minusfir; i < n; i++){
+            if (sign != ' ' && glavstr[i] != '-') secondch += glavstr[i];
+
+            if (glavstr[i] == '+' || glavstr[i] == '-' || glavstr[i] == '/' || glavstr[i] == '*') schetchik++;
+
+            if (schetchik == 0) firstch += glavstr[i];
+
+            if (glavstr[i] == '-' && sign != ' ') minussec = 1;
+            else if (glavstr[i] == '+' || glavstr[i] == '-' || glavstr[i] == '/' || glavstr[i] == '*') sign = glavstr[i];
+        }
+
+        // Если есть ошибка, то программа выводит место, где была совершена ошибка, и причину ошибки.
+        if (why != ""){
+            int f = 0;
+            for (int i = 0; i < n; i++){
+                if (mist[i] != '^' || f == 1) mist[i] = '.';
+                if (mist[i] == '^') f = 1;
+            }
+            cout << mist << endl;
+            cout << why << endl;
+            continue;
+        }
+
+        int _firstch, _secondch;
+        _firstch = 0;
+        _secondch = 0;
+        _firstch = atoi(firstch.c_str());
+        _secondch = atoi(secondch.c_str());
+
+        if (minusfir == 1) _firstch *= -1;
+        if (minussec == 1) _secondch *= -1;
+
+        // Если не было совешенно ошибок, то программа выводит ответ.
+        if (sign == '+') cout << _firstch + _secondch << endl;
+        if (sign == '*') cout << _firstch * _secondch << endl;
+        if (sign == '-') cout << _firstch - _secondch << endl;
+        if (sign == '/') cout << _firstch / _secondch << endl;
     }
 }
